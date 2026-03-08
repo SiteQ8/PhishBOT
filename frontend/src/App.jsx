@@ -616,7 +616,246 @@ const inputStyle = {
 
 // ── App Shell ─────────────────────────────────────────────────────────────────
 
-const TABS = ['Dashboard','Scanner','Keywords','Logs'];
+// ── How It Works Tab ──────────────────────────────────────────────────────────
+
+function HowItWorks() {
+  const layers = [
+    {
+      num: '01',
+      title: 'Input Ingestion',
+      color: C.accent,
+      icon: '⬇',
+      desc: 'Any URL, raw email body, or free-form text is accepted. The engine auto-detects the input type (URL / text / email) or you can force a specific mode.',
+      points: ['Supports single scan & bulk batch (up to 50 inputs per call)', 'Input is normalised and truncated to 500 chars for analysis', 'Source tagging lets you track which integration triggered the scan'],
+    },
+    {
+      num: '02',
+      title: 'Allowlist Check',
+      color: C.success,
+      icon: '✓',
+      desc: 'Before any analysis, the domain is checked against a trusted allowlist. Allowlisted domains are immediately returned as clean, avoiding false positives on major platforms.',
+      points: ['Pre-seeded with google.com, microsoft.com, github.com and 7 others', 'Fully editable via API: POST /api/allowlist', 'Root-domain matching: "login.google.com" matches "google.com"'],
+    },
+    {
+      num: '03',
+      title: 'URL Structural Analysis',
+      color: '#ff9800',
+      icon: '🔗',
+      desc: 'For URL inputs the engine performs deep structural dissection, flagging patterns statistically correlated with phishing infrastructure.',
+      points: [
+        'IP-as-hostname detection (+30 pts) — legitimate sites use domain names',
+        'Suspicious TLD blacklist — .tk .ml .xyz .top .gq and 14 others (+25 pts)',
+        'URL-encoding tricks in hostname (+20 pts)',
+        'URL shortener detection — bit.ly, tinyurl, goo.gl (+15 pts)',
+        'Deep subdomain nesting ≥3 levels (+15 pts)',
+        'Non-ASCII / Cyrillic homoglyph characters (+20–35 pts)',
+      ],
+    },
+    {
+      num: '04',
+      title: 'Brand Impersonation / Typosquat Detection',
+      color: C.danger,
+      icon: '🎭',
+      desc: 'The engine compares every scanned hostname against a list of 20+ major brands using Levenshtein edit-distance, catching subtle misspellings designed to deceive users.',
+      points: [
+        'Covers PayPal, Google, Apple, Microsoft, Amazon, Netflix, Chase, HSBC and more',
+        'Edit distance ≤ 2 triggers a typosquat alert (+35 pts)',
+        'Brand keyword embedded in domain also flagged (+30 pts)',
+        'Example: "paypa1-secure.tk" → detected as PayPal typosquat',
+      ],
+    },
+    {
+      num: '05',
+      title: 'Text & Email Heuristics',
+      color: C.warn,
+      icon: '📧',
+      desc: 'For text/email inputs, 12 regex-based heuristic rules fire against the body, targeting common social-engineering language patterns.',
+      points: [
+        'Urgency manipulation: "urgent action required" (+20 pts)',
+        'Account suspension threats (+25 pts)',
+        'Password expiry lures (+25 pts)',
+        'SSN / credit card harvesting language (+35 pts)',
+        'Generic salutations: "Dear Customer" (+10 pts)',
+        'Embedded URLs inside text are recursively scanned at 60% weight',
+      ],
+    },
+    {
+      num: '06',
+      title: 'Keyword Database Matching',
+      color: '#b388ff',
+      icon: '🔑',
+      desc: 'The input is matched against your managed keyword library. Each keyword carries a severity level that maps directly to a score contribution.',
+      points: [
+        'Severity → score: LOW +10 · MEDIUM +20 · HIGH +30 · CRITICAL +45',
+        '18 default keywords pre-seeded across 6 categories',
+        'Full CRUD API — add, update severity, bulk import, delete',
+        'Hit counter increments per keyword per scan for analytics',
+        'Categories: credential · urgency · financial · brand-abuse · scam · general',
+      ],
+    },
+    {
+      num: '07',
+      title: 'Verdict & Scoring',
+      color: C.accent,
+      icon: '⚖',
+      desc: 'All signal scores are summed and capped at 100. The final verdict is derived from three clearly defined thresholds.',
+      points: [
+        '0–34   → ✅ CLEAN — No significant threat signals',
+        '35–69  → ⚠️ SUSPICIOUS — Review recommended',
+        '70–100 → 🚨 PHISHING — High confidence threat',
+        'Each scan returns full signal breakdown for explainability',
+        'Every result is persisted to SQLite for audit and analytics',
+      ],
+    },
+  ];
+
+  const integrations = [
+    { icon: '🌐', name: 'REST API', desc: 'POST /api/scan from any app, SIEM, or script. Supports single and bulk (50×) scan endpoints.' },
+    { icon: '🤖', name: 'Telegram Bot', desc: 'Auto-scans URLs and messages in any chat. Add keywords via /addkeyword command.' },
+    { icon: '🐍', name: 'Python / cURL', desc: 'Lightweight client — no SDK needed. Standard JSON in/out over HTTP.' },
+    { icon: '🐳', name: 'Docker', desc: 'docker-compose up -d deploys the full stack: API + Dashboard + Bot in one command.' },
+  ];
+
+  return (
+    <div style={{ maxWidth: 960, margin: '0 auto' }}>
+      {/* Hero */}
+      <div style={{
+        background: `linear-gradient(135deg, #0d1a2e 0%, #0a1525 100%)`,
+        border: `1px solid ${C.border}`,
+        borderLeft: `4px solid ${C.accent}`,
+        borderRadius: 10, padding: '32px 36px', marginBottom: 24,
+      }}>
+        <div style={{ fontFamily:"'Syne', sans-serif", fontSize: 28, fontWeight: 800, color: C.accent, marginBottom: 10 }}>
+          How PhishBOT Works
+        </div>
+        <div style={{ fontSize: 14, color: C.textDim, lineHeight: 1.7, maxWidth: 720 }}>
+          PhishBOT is a <span style={{ color: C.text }}>multi-layer phishing detection engine</span> that
+          analyses URLs, email bodies, and raw text through a pipeline of structural, heuristic, and keyword-based
+          checks. Every scan produces an <span style={{ color: C.text }}>explainable score</span> — not just a verdict.
+        </div>
+        <div style={{ display: 'flex', gap: 24, marginTop: 20 }}>
+          {[
+            { label: 'Detection Layers', value: '7' },
+            { label: 'Default Keywords', value: '18' },
+            { label: 'Brand Watchlist', value: '20+' },
+            { label: 'Scoring Cap', value: '100' },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 26, fontWeight: 800, color: C.accent, fontFamily: "'Syne', sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 2 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pipeline flow */}
+      <div style={{ marginBottom: 12, fontSize: 11, color: C.accent, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+        Detection Pipeline
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 28 }}>
+        {layers.map((layer, i) => (
+          <LayerCard key={i} layer={layer} />
+        ))}
+      </div>
+
+      {/* Scoring table */}
+      <Card title="Scoring Reference" style={{ marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          {[
+            { range: '0 – 34', verdict: 'CLEAN', color: C.success, note: 'No action needed' },
+            { range: '35 – 69', verdict: 'SUSPICIOUS', color: C.warn, note: 'Manual review' },
+            { range: '70 – 100', verdict: 'PHISHING', color: C.danger, note: 'Block / report' },
+            { range: 'CRITICAL kw', verdict: '+45 pts', color: '#b388ff', note: 'Highest weight' },
+          ].map((s, i) => (
+            <div key={i} style={{
+              background: '#060b17', border: `1px solid ${s.color}33`,
+              borderTop: `3px solid ${s.color}`,
+              borderRadius: 6, padding: '14px 16px', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: s.color, fontFamily: "'Syne', sans-serif" }}>{s.range}</div>
+              <div style={{ fontSize: 12, color: s.color, fontWeight: 700, margin: '6px 0 4px' }}>{s.verdict}</div>
+              <div style={{ fontSize: 11, color: C.textDim }}>{s.note}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Integrations */}
+      <div style={{ marginBottom: 12, fontSize: 11, color: C.accent, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+        Integrations
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
+        {integrations.map((int, i) => (
+          <div key={i} style={{
+            background: C.panel, border: `1px solid ${C.border}`,
+            borderRadius: 8, padding: '18px 20px', display: 'flex', gap: 14,
+          }}>
+            <span style={{ fontSize: 24 }}>{int.icon}</span>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>{int.name}</div>
+              <div style={{ fontSize: 12, color: C.textDim, lineHeight: 1.6 }}>{int.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer credit */}
+      <div style={{
+        textAlign: 'center', padding: '18px 0', fontSize: 12, color: C.textDim,
+        borderTop: `1px solid ${C.border}`,
+      }}>
+        Built by <span style={{ color: C.accent, fontWeight: 700 }}>Ali AlEnezi</span>
+        {' '}&nbsp;·&nbsp;{' '}
+        <a href="https://github.com/SiteQ8/PhishBOT" style={{ color: C.accent }} target="_blank" rel="noreferrer">
+          github.com/SiteQ8/PhishBOT
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function LayerCard({ layer }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{
+      background: C.panel, border: `1px solid ${C.border}`,
+      borderLeft: `3px solid ${layer.color}`,
+      borderRadius: 6, overflow: 'hidden',
+      transition: 'border-color 0.2s',
+    }}>
+      <div
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 14,
+          padding: '14px 18px', cursor: 'pointer',
+        }}
+      >
+        <span style={{
+          fontFamily: "'Syne', sans-serif", fontWeight: 800,
+          fontSize: 13, color: layer.color, minWidth: 28,
+        }}>{layer.num}</span>
+        <span style={{ fontSize: 22 }}>{layer.icon}</span>
+        <span style={{ flex: 1, fontSize: 14, fontWeight: 700, color: C.text }}>{layer.title}</span>
+        <span style={{ fontSize: 11, color: C.textDim }}>{open ? '▲ collapse' : '▼ details'}</span>
+      </div>
+      {open && (
+        <div style={{ padding: '0 18px 16px 60px', borderTop: `1px solid ${C.border}` }}>
+          <p style={{ fontSize: 13, color: C.textDim, lineHeight: 1.7, margin: '12px 0 10px' }}>{layer.desc}</p>
+          <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 5 }}>
+            {layer.points.map((pt, i) => (
+              <li key={i} style={{ fontSize: 12, color: C.text, display: 'flex', gap: 8 }}>
+                <span style={{ color: layer.color, flexShrink: 0 }}>›</span>
+                <span>{pt}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const TABS = ['Dashboard', 'Scanner', 'Keywords', 'Logs', 'How It Works'];
 
 export default function App() {
   const [tab, setTab]     = useState('Dashboard');
@@ -678,10 +917,11 @@ export default function App() {
 
       {/* Content */}
       <div style={{ padding:'24px 28px' }}>
-        {tab === 'Dashboard' && <Dashboard />}
-        {tab === 'Scanner'   && <Scanner />}
-        {tab === 'Keywords'  && <Keywords />}
-        {tab === 'Logs'      && <Logs />}
+        {tab === 'Dashboard'    && <Dashboard />}
+        {tab === 'Scanner'      && <Scanner />}
+        {tab === 'Keywords'     && <Keywords />}
+        {tab === 'Logs'         && <Logs />}
+        {tab === 'How It Works' && <HowItWorks />}
       </div>
     </div>
   );
