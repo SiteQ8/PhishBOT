@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: phishbot-api
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      NODE_ENV: production
+      ALLOWED_ORIGIN: "http://localhost:3000"
+    volumes:
+      - phishbot_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: phishbot-ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: phishbot-telegram
+    environment:
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      API_BASE_URL: http://backend:3001
+      ADMIN_IDS: ${ADMIN_IDS:-}
+      AUTO_SCAN: "true"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    profiles:
+      - telegram
+
+volumes:
+  phishbot_data:
