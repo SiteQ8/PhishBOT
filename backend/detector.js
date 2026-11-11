@@ -1,4 +1,4 @@
-// detector.js — Core phishing detection engine
+// detector.js: Core phishing detection engine
 'use strict';
 
 const db = require('./db');

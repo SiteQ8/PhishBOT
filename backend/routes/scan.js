@@ -31,7 +31,7 @@ router.post('/', (req, res) => {
   res.json({ success: true, id, ...result });
 });
 
-// POST /api/scan/bulk — scan multiple inputs at once
+// POST /api/scan/bulk: scan multiple inputs at once
 router.post('/bulk', (req, res) => {
   const { inputs, type = 'auto', source = null } = req.body;
 

@@ -1,4 +1,4 @@
-// server.js — PhishBOT API server
+// server.js: PhishBOT API server
 'use strict';
 
 const express    = require('express');

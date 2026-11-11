@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const db     = require('../db');
 
-// GET /api/logs — paginated scan history
+// GET /api/logs: paginated scan history
 router.get('/', (req, res) => {
   const page    = Math.max(1, parseInt(req.query.page)  || 1);
   const limit   = Math.min(100, parseInt(req.query.limit) || 20);
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
   res.json({ success: true, page, limit, total, pages: Math.ceil(total / limit), logs: rows });
 });
 
-// GET /api/logs/summary — dashboard stats
+// GET /api/logs/summary: dashboard stats
 router.get('/summary', (req, res) => {
   const verdicts = db.prepare(`
     SELECT verdict, COUNT(*) AS count FROM scan_logs GROUP BY verdict
@@ -65,7 +65,7 @@ router.delete('/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// DELETE /api/logs — clear all logs
+// DELETE /api/logs: clear all logs
 router.delete('/', (req, res) => {
   const { confirm } = req.body;
   if (confirm !== 'CLEAR_ALL') return res.status(400).json({ success: false, error: 'Send confirm: "CLEAR_ALL"' });

@@ -1,4 +1,4 @@
-// db.js — SQLite database initialization and access
+// db.js: SQLite database initialization and access
 const Database = require('better-sqlite3');
 const path = require('path');
 

@@ -2,7 +2,7 @@
 const router  = require('express').Router();
 const db      = require('../db');
 
-// GET /api/keywords — list all
+// GET /api/keywords: list all
 router.get('/', (req, res) => {
   const { category, severity, search } = req.query;
   let sql    = 'SELECT * FROM keywords';
@@ -28,7 +28,7 @@ router.get('/stats', (req, res) => {
   res.json({ success: true, stats: totals });
 });
 
-// POST /api/keywords — add single or bulk
+// POST /api/keywords: add single or bulk
 router.post('/', (req, res) => {
   const { keyword, keywords, category = 'general', severity = 'medium' } = req.body;
 
@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
   res.status(201).json({ success: true, added, results });
 });
 
-// PATCH /api/keywords/:id — update severity / category
+// PATCH /api/keywords/:id: update severity / category
 router.patch('/:id', (req, res) => {
   const { category, severity } = req.body;
   const VALID_SEV = new Set(['low','medium','high','critical']);
@@ -86,7 +86,7 @@ router.delete('/:id', (req, res) => {
   res.json({ success: true, deleted: req.params.id });
 });
 
-// DELETE /api/keywords — bulk delete by ids array
+// DELETE /api/keywords: bulk delete by ids array
 router.delete('/', (req, res) => {
   const { ids } = req.body;
   if (!Array.isArray(ids) || !ids.length)

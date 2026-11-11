@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PhishBOT — Telegram Phishing Detection Bot
+PhishBOT: Telegram Phishing Detection Bot
 Scans URLs and text messages via the PhishBOT backend API.
 
 Usage:
