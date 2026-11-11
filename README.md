@@ -1,29 +1,29 @@
-# 🎣 PhishBOT
+# PhishBOT
 
-> **Real-time phishing detection platform** — REST API engine, React dashboard, and Telegram bot. Built by [Ali AlEnezi](https://github.com/SiteQ8).
+> **Real-time phishing detection platform**, REST API engine, React dashboard, and Telegram bot. Built by [Ali AlEnezi](https://github.com/SiteQ8).
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
-### Dashboard — Live Detection Overview
+### Dashboard: Live Detection Overview
 ![Dashboard](docs/screenshots/01-dashboard.png)
 
-### Scanner — Analyse URLs, Emails & Text
+### Scanner: Analyse URLs, Emails & Text
 ![Scanner](docs/screenshots/02-scanner.png)
 
-### Keywords — Threat Intelligence Management
+### Keywords: Threat Intelligence Management
 ![Keywords](docs/screenshots/03-keywords.png)
 
-### Logs — Full Scan History
+### Logs: Full Scan History
 ![Logs](docs/screenshots/04-logs.png)
 
-### Telegram Bot — In-Chat Detection
+### Telegram Bot: In-Chat Detection
 ![Telegram Bot](docs/screenshots/05-telegram-bot.png)
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 PhishBOT is built as three independent layers: a **detection engine**, a **REST API**, and two **client interfaces** (web dashboard + Telegram bot).
 
@@ -66,7 +66,7 @@ Input (URL / Text / Email)
 | Detection Layer         | Signal Example                          | Points  |
 |-------------------------|-----------------------------------------|---------|
 | Suspicious TLD          | `.tk`, `.xyz`, `.gq`, `.ml`             | +25     |
-| Brand typosquat         | `paypa1.com`, `gooogle.tk`              | +30–35  |
+| Brand typosquat         | `paypa1.com`, `gooogle.tk`              | +30-35  |
 | IP address host         | `http://192.168.1.1/login`              | +30     |
 | URL contains `@`        | `http://user@evil.com`                  | +25     |
 | URL-encoded hostname    | `http://evil%2Ecom`                     | +20     |
@@ -85,7 +85,7 @@ Input (URL / Text / Email)
 
 ---
 
-## 🖥️ Dashboard UI — Tab-by-Tab Guide
+## Dashboard UI: Tab-by-Tab Guide
 
 The React dashboard runs at `http://localhost:3000` and has 4 tabs.
 
@@ -114,10 +114,10 @@ The interactive analysis tool. Supports three input modes:
 | `email` | Same as text, optimised for email body patterns          |
 
 After scanning, the result panel shows:
-- **Verdict badge** — colour-coded CLEAN / SUSPICIOUS / PHISHING
-- **Threat Score bar** — visual 0–100 risk meter
-- **Threat Signals** — each detection with its point contribution (🔴 high / 🟡 medium / 🟢 low)
-- **Matched Keywords** — keywords from your database found in the input
+- **Verdict badge**: colour-coded CLEAN / SUSPICIOUS / PHISHING
+- **Threat Score bar**: visual 0-100 risk meter
+- **Threat Signals**: each detection with its point contribution (🔴 high / 🟡 medium / 🟢 low)
+- **Matched Keywords**: keywords from your database found in the input
 
 ### 3. Keywords Tab
 
@@ -142,7 +142,7 @@ Full audit trail of every scan. Filter by verdict, expand any row to see the ful
 
 ---
 
-## 🤖 Telegram Bot
+## Telegram Bot
 
 Connects to your backend API and scans in real time inside any Telegram chat.
 
@@ -164,12 +164,12 @@ When `AUTO_SCAN=true` (default), the bot automatically scans every message:
 - Messages longer than 30 characters → text heuristic analysis
 
 For phishing/suspicious results, inline buttons appear:
-- **📋 Full Report** — reference the scan ID in the web dashboard
-- **✅ Mark Safe** — dismiss the alert
+- **Full Report**: reference the scan ID in the web dashboard
+- **Mark Safe**: dismiss the alert
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 PhishBOT/
@@ -191,7 +191,7 @@ PhishBOT/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Backend API
 
@@ -225,7 +225,7 @@ docker-compose --profile telegram up -d    # + Telegram bot
 
 ---
 
-## 📡 API Reference
+## API Reference
 
 ### Scan
 
@@ -276,19 +276,19 @@ POST /api/keywords
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
-- Rate limiting — 200 req/15 min global, 60 req/min on scan endpoint
-- Helmet.js — HTTP security headers (CSP, HSTS, X-Frame-Options)
-- CORS control — configurable via `ALLOWED_ORIGIN`
-- Input sanitization — stripped and length-capped before processing
-- Allowlist bypass — trusted domains skip detection to reduce false positives
+- Rate limiting: 200 req/15 min global, 60 req/min on scan endpoint
+- Helmet.js: HTTP security headers (CSP, HSTS, X-Frame-Options)
+- CORS control: configurable via `ALLOWED_ORIGIN`
+- Input sanitization: stripped and length-capped before processing
+- Allowlist bypass: trusted domains skip detection to reduce false positives
 
 ---
 
-## 👤 Author
+## Author
 
-**Ali AlEnezi** — [@SiteQ8](https://github.com/SiteQ8)
+**Ali AlEnezi**, [@SiteQ8](https://github.com/SiteQ8)
 
 Kuwait-based cybersecurity practitioner focused on security architecture, compliance frameworks, and offensive security tooling.
 
